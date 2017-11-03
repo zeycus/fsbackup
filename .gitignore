@@ -99,3 +99,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+# pycharm
+.idea/
+# Test temp files
+tests/temp/
