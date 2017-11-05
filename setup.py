@@ -8,7 +8,7 @@ def readme():
         return f.read()
 
 setup(name='fsbackup',
-      version='0.1',
+      version='0.1.1',
       description='Multi-Volume Backup for Large Filesystems',
       long_description=readme(),
       classifiers=[
