@@ -185,7 +185,7 @@ class FileDB(object):
     def volumeIntegrityCheck(self, vol):
         """Performs a volume integrity check.
 
-        for each file that according to the DDBB is in this volume, a full comparison
+        For each file that according to the DDBB is in this volume, a full comparison
         is performed between the file in the filesystem and the file in the backup volume.
         Of course, only when the file exists yet in the filesystem.
 

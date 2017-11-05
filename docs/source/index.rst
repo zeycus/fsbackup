@@ -44,6 +44,7 @@ Main Commands Module
 .. autofunction:: updateVolume
 .. autofunction:: refreshFileInfo
 .. autofunction:: createDatabase
+.. autofunction:: integrityCheck
 
 *****************
 Auxiliary Modules
