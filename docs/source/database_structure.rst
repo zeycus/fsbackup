@@ -29,7 +29,7 @@ where:
     * ``size`` is the size of the file in bytes, obtained with ``os.stat(fn).st_mtime``\ .
 
 The fields used for look-up are ``filename`` and ``hash``, so the collection should have an index on each of them.
-The one on ``filename`` should be have ``unique=True``, to ensure no filename is added twice [#fInd]_ .
+The one on ``filename`` should have ``unique=True``, to ensure no filename is added twice [#fInd]_ .
 
 
 

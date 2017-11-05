@@ -8,6 +8,7 @@ In this section, the basic usage is shown, but the full detail and optional para
 Database Creation
 =================
 It is achieved with::
+
     fsbck.py createDatabase -db=<config_file>
 
 If the database containing the two necessary collections ``files`` and ``volumes`` do not exist, they are created.
@@ -17,6 +18,7 @@ Otherwise the execution fails. If you want it rebuild, add the ``--force`` flag.
 Create reports for backup status
 ================================
 With::
+
     fsbck.py backupStatus -db=<config_file>
 
 several text files are created (with different level of detail) regarding the status of the backup:
@@ -134,7 +136,8 @@ it is traversed and an entry is created for each actual file found.
 
 Volume Integrity Check
 =====================================
-In case we want to make sure that a backup volume is OK, we can perform an integrity check with:
+In case we want to make sure that a backup volume is OK, we can perform an integrity check with::
+
     fsbck.py integrityCheck -db=<config_file> --drive=<driveLetter>
 
 This is a time consuming operation that actually compares each file of the volume with its counterpart in the actual filesystem
