@@ -94,3 +94,8 @@ recovers the relevant information in the actual (G:) volume for a particular fol
 you'd have to do this for every volume.
 
 
+Collaboration
+=============
+
+You may wish to improve or add features, in that case you are more than welcome, feel free to contact me at zeycus@gmail.com.
+
