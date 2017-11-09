@@ -11,8 +11,7 @@ Module :mod:`fsbackup`, Multi-Volume Backup for Large Filesystems
 .. toctree::
    :maxdepth: 2
 
-
-.. include:: README.rst
+.. include:: ../../README.rst
 
 .. include:: database_structure.rst
 
@@ -27,6 +26,8 @@ Module :mod:`fsbackup`, Multi-Volume Backup for Large Filesystems
 .. include:: warnings.rst
 
 .. include:: todo.rst
+
+.. include:: ../../HISTORY.rst
 
 
 ######################

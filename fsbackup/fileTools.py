@@ -10,7 +10,8 @@
 
 """
 
-import os.path
+import os
+import shutil
 import uuid
 from datetime import datetime
 
@@ -55,3 +56,22 @@ def abspath2longabspath(abspath):
         return "\\\\?\\" + abspath
     else:
         raise ValueError("Path '%s' no soportado." % abspath)
+
+
+def safeFileCopy(src, dst):
+    """Copies a file but removes the target file if anything went wrong, before failing.
+
+    :param src: source file
+    :type src: str
+    :param dst: destiny file
+    :type dst: str
+
+    """
+    try:
+        shutil.copy(src, dst)
+    except:
+        try:
+            os.remove(dst)
+        except:
+            pass
+        raise IOError("For some reason file '%s' could not be copied to '%s'. Target was deleted." % (src, dst))

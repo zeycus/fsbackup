@@ -4,11 +4,11 @@ from setuptools import setup
 
 
 def readme():
-    with open(r'.\docs\source\README.rst') as f:
+    with open('README.rst') as f:
         return f.read()
 
 setup(name='fsbackup',
-      version='0.1.1',
+      version='0.1.2',
       description='Multi-Volume Backup for Large Filesystems',
       long_description=readme(),
       classifiers=[
@@ -28,5 +28,5 @@ setup(name='fsbackup',
       scripts=['bin/fsbck.py'],
       zip_safe=False,
       test_suite='nose.collector',
-      tests_required=['nose'],
+      tests_require=['nose'],
 )

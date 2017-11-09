@@ -1,4 +1,7 @@
 include README.rst
+include HISTORY.rst
+include LICENSE
+include setup.cfg
 recursive-include tests *
 recursive-include docs *
 prune docs/_build

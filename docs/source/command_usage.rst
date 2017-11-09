@@ -55,8 +55,9 @@ This is achieved with::
 
     fsbck.py refreshHashes -db=<config_file>
 
-For large systems, the calculation of hashes is time-consuming. The first time I calculated it for my NAS it took nearly
-a week. So, I prefer to perform this process dayly, in scheduled task at night, and right after it the ``backupStatus`` reports are regenerated.
+For large filesystems the calculation of hashes is time-consuming. The first calculation for my NAS took nearly
+a whole week, so I prefer to perform this process dayly, in scheduled task at night,
+and a ``backupStatus`` immediatly after it.
 
 
 Volume update

@@ -122,11 +122,11 @@ def createDatabase(database, forceFlag, logger):
     if (not forceFlag) and ((database['files'].count() > 0) or (database['volumes'].count() > 0)):
         raise Exception("Found collections with content, aborted creation. Use --force to destroy current information.")
     logger.debug("Remove content of collection 'hashes', and create indexes.")
-    database['files'].remove()
+    database['files'].delete_many({})
     database['files'].create_index([('filename', pymongo.ASCENDING)], unique=True)
     database['files'].create_index([('hash', pymongo.ASCENDING)])
     logger.debug("Remove content of collection 'volumes', and create indexes.")
-    database['volumes'].remove()
+    database['volumes'].delete_many({})
     database['volumes'].create_index([('hash', pymongo.ASCENDING)], unique=True)
 
 

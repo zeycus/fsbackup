@@ -16,7 +16,7 @@ import bisect
 import random
 
 from fsbackup.shaTools import sha256
-from fsbackup.fileTools import sizeof_fmt, abspath2longabspath
+from fsbackup.fileTools import sizeof_fmt, abspath2longabspath, safeFileCopy
 from fsbackup.diskTools import getVolumeInfo
 
 
@@ -62,7 +62,7 @@ class HashVolume(object):
             in case for some reason the synchronization was broken.
         """
         self.logger.debug("Rebuilding DDBB info for volume '%s'." % self.volId)
-        result = self.container.remove(dict(volume=self.volId))
+        result = self.container.delete_many(dict(volume=self.volId))
         self.logger.debug("Removed all (%s) documents." % result['n'])
         result = self.container.insert([dict(volume=self.volId, hash=fn, size=size) for (fn, size) in self.traverseFiles()])
         self.logger.debug("Created %s new documents." % len(result))
@@ -99,7 +99,7 @@ class HashVolume(object):
             sha = sha256(filename)
         fn_dest = self.fnForHash(sha)
         os.makedirs(os.path.dirname(fn_dest), exist_ok=True)  # Si el directorio no existe, lo crea.
-        shutil.copyfile(
+        safeFileCopy(
             src=filename,
             dst=fn_dest,
         )
@@ -116,7 +116,7 @@ class HashVolume(object):
         """
         fn_source = abspath2longabspath(self.fnForHash(sha))
         os.makedirs(os.path.dirname(filename), exist_ok=True)  # Si el directorio no existe, lo crea.
-        shutil.copyfile(
+        safeFileCopy(
             src=fn_source,
             dst=filename,
         )

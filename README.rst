@@ -94,6 +94,51 @@ recovers the relevant information in the actual (G:) volume for a particular fol
 you'd have to do this for every volume.
 
 
+So, how do I start?
+===================
+In a nutshell:
+
+1. Get a mongoDB server connection and create a database there. It could be local, mongoDB hosting (like `mlab <https://mlab.com/>`_ , just to name one), etc.
+
+2. Build a JSON config_file for the filesystem you want backed-up. For instance:
+
+.. code-block:: json
+
+  {
+    "connstr": "mongodb://myuser:mypwd@ds21135.mlab.com:34562/fsbackup_tvs761_main",
+    "paths": [
+      "\\\\ZEYCUS-TVS671\\Multimedia",
+      "\\\\ZEYCUS-TVS671\\Resources"
+    ],
+    "reportpref": "F:\\Dropbox\\fsbackup\\reports\\main_"
+  }
+
+where ``connstr`` is the conection string to your mongoDB database (in this case, ``fsbackup_tvs761_main``). More details in the documentation.
+Make sure the path in ``reportpref`` actually exists, reporting files are created there. In this case,
+``F:\\Dropbox\\fsbackup\\reports``.
+
+
+3. Create the actual collections in the database with::
+
+    fsbck.py createDatabase -db=<config_file> --force
+   
+
+4. Gather the current filesystem information with::
+
+    fsbck.py refreshHashes -db=<config_file>
+	
+The first time hashes are calculated for all files, so this may take **long**.
+
+5. Connect a formated external drive. Assuming it gets mounted in ``driveLetter``, execute::
+
+    fsbck.py processDrive -db=<config_file> --drive=<driveLetter>
+
+This fills the volume with backup data. When finished, a message will clarify whether more volumes are needed to go on
+with the backup.
+     
+
+
+
 Collaboration
 =============
 
