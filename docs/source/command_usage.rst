@@ -92,7 +92,7 @@ In the first days, when I wanted to update a volume I found myself always perfor
 
   2. volume update
 
-  3. backuptatus reports regeneration
+  3. backupstatus reports regeneration
 
 
 I created a batch, but after a while I decided an additional command was in order to do it all: ``processDrive``. With::

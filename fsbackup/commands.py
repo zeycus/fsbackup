@@ -9,7 +9,7 @@
 """
 
 
-from hashFileBackups.miscTools import buildVolumeInfoList
+from fsbackup.miscTools import buildVolumeInfoList
 import pymongo
 
 
