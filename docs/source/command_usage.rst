@@ -147,6 +147,12 @@ This is a time consuming operation that actually compares each file of the volum
 .. warning:: This is supposed to be done after a ``refreshHashes``. Otherwise the information in the DDBB might not reflect the actual state of the filesystem.
 
 
+Showing Volume Id
+=====================================
+To show the volume id on screen, use::
+
+    fsbck.py showVolumeId -db=<config_file> --drive=<driveLetter>
+
 
 .. rubric:: Footnotes
 

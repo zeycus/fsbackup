@@ -42,6 +42,14 @@ def extractVolumeInfo(hashVol):
     """
     hashVol.recalculateContainer()
 
+def showVolumeId(hashVol):
+    """Shows the volume id.
+
+    :param hashVol: the information regarding volumes
+    :type hashVol: HashVolume
+
+    """
+    hashVol.logger.info("The volume has id '%s'." % hashVol.volId)
 
 def cleanVolume(fDB, hashVol):
     """Removes files from the volume that are not necessary anymore.

@@ -42,8 +42,8 @@ def fsbck_wrapper(arg_list):
     )
     parser.add_argument('command', help="task to perform", type=lambda s:s.lower(),
                         choices=("backupstatus", "extractvolumeinfo", "cleanvolume", "updatevolume", "refreshhashes", "processdrive",
-                                 "createdatabase", "checkout", "integritycheck", ))
-    parser.add_argument('-db', '--dbfile', help="jsonfile whose filesystem/database is to be managed")
+                                 "createdatabase", "checkout", "integritycheck", "showvolumeid", ))
+    parser.add_argument('-db', '--dbfile', required=True, help="jsonfile whose filesystem/database is to be managed")
     parser.add_argument('-dr', '--drive', help="Windows drive (letter) where the volume is mounted")
     parser.add_argument('--force', '-f', help="Confirmation flag for sensitive operations", action='store_true')
     parser.add_argument('--sourcepath', help="Path in the filesystem that is to be restored")
@@ -80,6 +80,8 @@ def fsbck_wrapper(arg_list):
         comms.backupStatus(fDB=fDB, volDB=volDB, reportPref=dbConf['reportpref'])
     elif args.command.lower() == 'extractvolumeinfo':
         comms.extractVolumeInfo(hashVol=hashVol)
+    elif args.command.lower() == 'showvolumeid':
+        comms.showVolumeId(hashVol=hashVol)
     elif args.command.lower() == 'cleanvolume':
         nDeleted = comms.cleanVolume(fDB=fDB, hashVol=hashVol)
         infoReturned['nDeleted'] = nDeleted
