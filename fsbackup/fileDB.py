@@ -23,19 +23,36 @@ class FileDB(object):
 
     """
 
-    def __init__(self, logger, fsPaths, container):
+    def __init__(self, logger, mountPoint, fsPaths, container):
         """Constructor.
 
         :param logger: internally stored logger, for feedback.
-        :param fsPaths: list of paths that we intend to be backed-up.
+        :param mountPoint: point where the filesystem is mounted
+        :type mountPoint: str
+        :param fsPaths: list of paths that we intend to be backed-up. Relative to the mountPoint.
         :type fsPaths: list of str
         :param container: database information regarding the files in the filesystem, its location, size and hash.
         :type container: Mongo_shelve
 
         """
         self.logger = logger
-        self.fsPaths = fsPaths
+        self.mountPoint = mountPoint
+        self.fsPaths = []
+        for path in fsPaths:  # Paths are gathered removing any '\\' at the end
+            while path[-1] == '\\':
+                path = path[:-1]
+            self.fsPaths.append(path)
         self.container = container
+
+    def compFn(self, fn):
+        """Returns the absolute filename associated to a relative-to-mountPoint filename."""
+        return abspath2longabspath(os.path.join(self.mountPoint, fn))
+
+    @property
+    def fsPathsComplete(self):
+        """Returns list of fsPaths, in absolute form."""
+        return [os.path.join(self.mountPoint, path) for path in self.fsPaths]
+
 
     def hashesSet(self):
         """Returns the set of hashes in the DDBB.
@@ -59,10 +76,20 @@ class FileDB(object):
         # Traverse actual files
         self.logger.debug("Traversing the filesystem.")
         currentFiles = []
-        for sourcePath in self.fsPaths:
+        for sourcePath in self.fsPathsComplete:
             for root, _, fns in os.walk(sourcePath):
                 for fn in fns:
-                    currentFiles.append(os.path.join(root, fn))
+                    fnComp = os.path.join(root, fn)
+                    ## currentFiles.append(os.path.relpath(fnComp.self.mountPoint))  # Relative paths do not work as expected for start like '\\ZEYCUS'.
+                    # See https://stackoverflow.com/questions/47364579/unexpected-behaviour-of-pythons-os-path-relpath/47364931#47364931
+                    # Instead, I do it manually:
+                    fnAux = fnComp[len(self.mountPoint):]
+                    while fnAux[0] == '\\':
+                        fnAux = fnAux[1:]
+                    currentFiles.append(fnAux)
+
+
+
         currentFiles = set(currentFiles)
 
         # Obtain files stored in the DDBB
@@ -81,7 +108,7 @@ class FileDB(object):
         else:
             self.logger.debug("Updating entries. Files to check: %s." % len(storedFilesSet & currentFiles))
         for fn in sorted(storedFilesSet & currentFiles):
-            fnStat = os.stat(abspath2longabspath(fn))
+            fnStat = os.stat(self.compFn(fn))
             timestamp = fnStat.st_mtime
             size = fnStat.st_size
             if forceRecalc or (timestamp > storedFiles[fn]['timestamp']) or (size != storedFiles[fn]['size']):
@@ -96,11 +123,11 @@ class FileDB(object):
         self.logger.debug("Inserting new entries.")
         for fn in sorted(currentFiles - storedFilesSet):
             self.logger.debug('Adding %s' % fn)
-            fnStat = os.stat(abspath2longabspath(fn))
+            fnStat = os.stat(self.compFn(fn))
             self.container[fn] = dict(
                 timestamp=fnStat.st_mtime,
                 size=fnStat.st_size,
-                hash=sha256(abspath2longabspath(fn)),
+                hash=sha256(self.compFn(fn)),
             )
 
 
@@ -202,9 +229,10 @@ class FileDB(object):
         for fn, info in sorted(self):
             sha = info['hash']
             if sha in shaNeededSet:
+                fnComp = self.compFn(fn)
                 # Check file sizes
                 size_fs_db = info['size']
-                size_fs_real = os.stat(abspath2longabspath(fn)).st_size
+                size_fs_real = os.stat(fnComp).st_size
                 if size_fs_db != size_fs_real:
                     msg = "In filesystem, file sizes disagree for '%s': %s in ddbb and %s actual file size." % (
                     fn, size_fs_db, size_fs_real)
@@ -222,7 +250,7 @@ class FileDB(object):
                 # Check file content is equal
                 self.logger.debug("Errors so far: %s. Comparing '%s' and '%s'." % (len(problems), fn, fnVol))
                 try:
-                    areEqual = filecmp.cmp(fn, fnVol, shallow=False)  # This might fail there are I/O reading problems.
+                    areEqual = filecmp.cmp(fnComp, fnVol, shallow=False)  # This might fail there are I/O reading problems.
                     if not areEqual:
                         msg = "File '%s' in filesystem is not equal to file '%s' in volume." % (fn, fnVol)
                         self.logger.warning(msg)

@@ -30,7 +30,7 @@ class TestFsbackup(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.db.client.drop_database(cls.db.name)
-        shutil.rmtree(cls.pathbase)
+        shutil.rmtree(cls.pathbase, ignore_errors=True)
 
 
     def testBasicBackup(self):
@@ -79,7 +79,7 @@ class TestFsbackup(unittest.TestCase):
                 'checkout',
                 '-db=%s' % self.conn_testing,
                 '--drive=%s' % avLetter,
-                '--sourcepath=%s' % fs_path,
+                '--sourcepath=temp\\filesystem',
                 '--destpath=%s' % checkout_path,
                 '--loglevel=CRITICAL',
             ])
@@ -122,7 +122,7 @@ class TestFsbackup(unittest.TestCase):
                 'checkout',
                 '-db=%s' % self.conn_testing,
                 '--drive=%s' % avLetter,
-                '--sourcepath=%s' % fs_path,
+                '--sourcepath=temp\\filesystem',
                 '--destpath=%s' % checkout_path,
                 '--loglevel=CRITICAL',
             ])

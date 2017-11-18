@@ -1,7 +1,8 @@
 {
     "connstr": "mongodb://127.0.0.1:27017/backupfs_testing",
+    "mountPoint": ".",
     "paths": [
-        ".\\temp\\filesystem"
+        "temp\\filesystem"
     ],
     "reportpref": "F:\\Dropbox\\hashBackups\\tvs-671\\reports\\testing_"
 }

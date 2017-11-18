@@ -63,7 +63,7 @@ class HashVolume(object):
         """
         self.logger.debug("Rebuilding DDBB info for volume '%s'." % self.volId)
         result = self.container.delete_many(dict(volume=self.volId))
-        self.logger.debug("Removed all (%s) documents." % result['n'])
+        self.logger.debug("Removed all (%s) documents." % result.deleted_count)
         result = self.container.insert([dict(volume=self.volId, hash=fn, size=size) for (fn, size) in self.traverseFiles()])
         self.logger.debug("Created %s new documents." % len(result))
 
@@ -182,13 +182,13 @@ class HashVolume(object):
             if not (0 <= pos < len(filesizes)):  # Just checking, this should never happen
                 raise Exception("File chosen out of range")
             sizeFound, fnFound, shaFound = filesizes[pos]
+            self.logger.debug("Including new file '%s (%s)'. Available: %s" % (fnFound, sizeof_fmt(sizeFound), sizeof_fmt(avail)))
             self.storeFilename(
-                filename=fnFound,
+                filename=fDB.compFn(fnFound),
                 size=sizeFound,
                 sha=shaFound,
             )
             avail = self.getAvailableSpace()
-            self.logger.debug("Included new file '%s (%s)'. Available: %s" % (fnFound, sizeof_fmt(sizeFound), sizeof_fmt(avail)) )
             del filesizes[pos]
             shasAugmented.append(shaFound)
         return shasAugmented, True

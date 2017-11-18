@@ -60,10 +60,14 @@ def fsbck_wrapper(arg_list):
     client = pymongo.MongoClient(dbConf['connstr'])
     databaseName = re.search("(\w*)$", dbConf['connstr']).group(1)  # The database name is the last part of the connection string.
     db = client[databaseName]
-    paths = [os.path.normpath(os.path.join(os.path.dirname(args.dbfile), path)) for path in dbConf['paths']]  # If relative paths are found, make them absolute w.r.t the location of the json file.
+    if dbConf['mountPoint'][0] == '.':  # Relative path to the json location are allowed, if they start with '.'
+        mountPoint = os.path.normpath(os.path.join(os.path.dirname(args.dbfile), dbConf['mountPoint']))
+    else:
+        mountPoint = dbConf['mountPoint']
     fDB = FileDB(
         logger=logger,
-        fsPaths=paths,
+        mountPoint=mountPoint,
+        fsPaths=dbConf['paths'],
         container=Mongo_shelve(db['files'], "filename"),
     )
     volDB = Mongo_shelve(db['volumes'], 'hash')
