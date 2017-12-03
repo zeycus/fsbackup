@@ -23,6 +23,8 @@ Module :mod:`fsbackup`, Multi-Volume Backup for Large Filesystems
 
 .. include:: observations.rst
 
+.. include:: SO_differences.inc
+
 .. include:: warnings.rst
 
 .. include:: todo.rst

@@ -3,7 +3,8 @@ Database Structure
 ******************
 
 Information regarding the filesystem to be backed-up, and the current content
-of volumes, is stored in a `mongoDB <https://www.mongodb.com/>`_ database. 
+of volumes, is stored in a simple `mongoDB <https://www.mongodb.com/>`_ database.
+
 
 
 Filesystem
@@ -15,7 +16,7 @@ The entries/documents in it have the form:
 
 	{
         '_id': ObjectId("59e0a71c2afc32cfc4e7fa48"),
-        'filename': r"\\ZEYCUS-TVS671\Multimedia\video\animePlex\Shin Chan\Season 01\Shin Chan - S01E613.mp4",
+        'filename': r"Multimedia\video\animePlex\Shin Chan\Season 01\Shin Chan - S01E613.mp4",
         'hash': "4a7facfe42e8ff8812f9cab058bf79981974d9e2e300d56217d675ec5987cf05",
         'timestamp': 1197773340,
         'size': 68097104
@@ -23,13 +24,13 @@ The entries/documents in it have the form:
 
 where:
 
-    * The ``filename`` field is the absolute path of the file.
+    * The ``filename`` field is the file path relative to the mountpoint of the filesystem.
     * The ``hash`` field is the SHA-256 hash of the file.
     * ``timestamp`` is the file's last-modified timestamp.
     * ``size`` is the size of the file in bytes, obtained with ``os.stat(fn).st_mtime``\ .
 
 The fields used for look-up are ``filename`` and ``hash``, so the collection should have an index on each of them.
-The one on ``filename`` should have ``unique=True``, to ensure no filename is added twice [#fInd]_ .
+The one on ``filename`` should use ``unique=True``, to ensure no filename is added twice [#fInd]_ .
 
 
 
@@ -54,8 +55,8 @@ with entries like
 
 where:
 
-    * The ``volume`` is the volume SerialNumber.
-    * The ``hash`` field is the SHA-256 hash of the file.
+    * ``volume`` is the volume id. In Windows, volume serial numbers are used; in Linux, disk serial numbers.
+    * ``hash`` field is the SHA-256 hash of the file.
     * ``size`` is the size of the file in bytes.
 	
 This entry is saying that volume 3EC0BECC contains a file with the given hash, and filesize 97,092 bytes.

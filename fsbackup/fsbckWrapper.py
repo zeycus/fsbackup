@@ -3,7 +3,7 @@
 
 """
 .. module:: fsbck_wrapper
-    :platform: Windows
+    :platform: Windows, linux
     :synopsis: the entrance point script to the backup system
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>
@@ -44,11 +44,17 @@ def fsbck_wrapper(arg_list):
                         choices=("backupstatus", "extractvolumeinfo", "cleanvolume", "updatevolume", "refreshhashes", "processdrive",
                                  "createdatabase", "checkout", "integritycheck", "showvolumeid", ))
     parser.add_argument('-db', '--dbfile', required=True, help="jsonfile whose filesystem/database is to be managed")
-    parser.add_argument('-dr', '--drive', help="Windows drive (letter) where the volume is mounted")
+    if os.name == 'nt':
+        parser.add_argument('-dr', '--drive', help="Windows drive (letter) where the volume is mounted")
+    elif os.name == 'posix':
+        parser.add_argument('-dmp', '--drivemountpoint', help="Mounting point for external drive")
+    else:
+        raise OSError("OS '%s' not supported" % os.name)
     parser.add_argument('--force', '-f', help="Confirmation flag for sensitive operations", action='store_true')
     parser.add_argument('--sourcepath', help="Path in the filesystem that is to be restored")
     parser.add_argument('--destpath', help="Path where the checkout should be created")
     parser.add_argument('--loglevel', help="logging level.", choices=("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"), default="DEBUG")
+    parser.add_argument('--volumeid', help="Volume id to be used, if forcing it is needed.", default=None)
     args = parser.parse_args(arg_list)
 
     # ***** Logger *****
@@ -71,11 +77,19 @@ def fsbck_wrapper(arg_list):
         container=Mongo_shelve(db['files'], "filename"),
     )
     volDB = Mongo_shelve(db['volumes'], 'hash')
-    if args.drive is not None:
+    if ('drive' in args) and (args.drive is not None):  # Drive for Windows
         hashVol = HashVolume(
             logger=logger,
             locationPath=r"%s:\\" % args.drive,
             container=volDB,
+            volId=args.volumeid,
+        )
+    elif ('drivemountpoint' in args) and (args.drivemountpoint is not None):  # Drive for Linux
+        hashVol = HashVolume(
+            logger=logger,
+            locationPath=args.drivemountpoint,
+            container=volDB,
+            volId=args.volumeid,
         )
 
     # ***** Invoke the function that performs the given command *****

@@ -8,7 +8,7 @@ def readme():
         return f.read()
 
 setup(name='fsbackup',
-      version='0.1.3',
+      version='0.2.1',
       description='Multi-Volume Backup for Large Filesystems',
       long_description=readme(),
       classifiers=[
@@ -23,7 +23,7 @@ setup(name='fsbackup',
       author_email='zeycus@gmail.com',
       license='MIT',
       packages=['fsbackup'],
-      install_requires=["mongo_shelve"],
+      install_requires=["pymongo", "mongo_shelve"],
       include_package_data=True,
       scripts=['bin/fsbck.py'],
       zip_safe=False,

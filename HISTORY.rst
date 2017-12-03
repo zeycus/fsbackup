@@ -5,6 +5,30 @@ Release History
 ***************
 
 
+0.2.1 (2017-12-04)
+====================
+
+**Improvements**
+
+- Linux support.
+- New attribute ``mountPoint`` for **FileDB**.
+- New command ``showVolumeId``.
+
+
+**Bugfixes**
+
+- I had forgotten to use FileDB.fnComp() in a point of code.
+  
+
+
+0.1.3 (2017-11-12)
+====================
+
+**Improvements**
+
+- Make filename paths stored in the database relative to its mount point.
+
+
 0.1.2 (2017-11-09)
 ====================
 

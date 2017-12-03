@@ -3,7 +3,7 @@
 
 """
 .. module:: fileTools
-    :platform: Windows
+    :platform: Windows, linux
     :synopsis: module with a few low-level file-related funcions.
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>
@@ -48,14 +48,19 @@ def abspath2longabspath(abspath):
         https://msdn.microsoft.com/en-us/library/aa365247.aspx#maxpath
 
     """
-    if len(abspath) < 240:  # Estos no dan problemas
+    if os.name == 'posix':  # Linux: nothing to do
         return abspath
-    if (abspath[0] == abspath[1] == "\\"):  # Como en \\ZEYCUS-TVS671\Multimedia
-        return "\\\\?\\UNC" + abspath[1:]
-    elif (abspath[0].lower() in ('cdefghijklmnopqrstuvxyz')) and abspath[1:3] == ":\\":  # Como en C:\datos\Multimedia
-        return "\\\\?\\" + abspath
+    elif os.name == 'nt':  # Windows
+        if len(abspath) < 240:  # These are not troublesome
+            return abspath
+        if (abspath[0] == abspath[1] == "\\"):  # like in \\ZEYCUS-TVS671\Multimedia
+            return "\\\\?\\UNC" + abspath[1:]
+        elif (abspath[0].lower() in ('cdefghijklmnopqrstuvxyz')) and abspath[1:3] == ":\\":  # Like in C:\datos\Multimedia
+            return "\\\\?\\" + abspath
+        else:
+            raise ValueError("Path '%s' not supported." % abspath)
     else:
-        raise ValueError("Path '%s' no soportado." % abspath)
+        raise SyntaxError("SO '%s' not supported by fsbackup." % os.name)
 
 
 def safeFileCopy(src, dst):

@@ -3,7 +3,7 @@
 
 """
 .. module:: fsbck
-    :platform: Windows
+    :platform: Windows, linux
     :synopsis: the entrance point script to the backup system
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>

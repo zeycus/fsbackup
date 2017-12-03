@@ -8,9 +8,10 @@ one per filesystem. For instance:
 
   {
     "connstr": "mongodb://myuser:mypwd@ds21135.mlab.com:34562/fsbackup_tvs761_main",
+    "mountpoint": "\\\\ZEYCUS-TVS671",
     "paths": [
-      "\\\\ZEYCUS-TVS671\\Multimedia",
-      "\\\\ZEYCUS-TVS671\\Resources"
+      "Multimedia",
+      "Resources"
     ],
     "reportpref": "F:\\Dropbox\\fsbackup\\reports\\main_"
   }
@@ -21,10 +22,11 @@ The information is as follows:
 ``connstr``
   The connection string to the mongoDB database.
 
+``mountpoint``
+  The location where the filesystem is mounted. It is used as a basepath for ``paths``.
+  
 ``paths``
-  The list of paths in the filesystem that we want backed-up. So far I've been using absolute paths myself,
-  but I think that paths relative to the location of the config file work as well. But I have not tested
-  it that heavily.
+  The list of paths in the filesystem that we want backed-up, relative to the ``mountpoint``.
 
 ``reportpref``
   Prefix for reports. All files created by the ``backupStatus`` command are created with that prefix.

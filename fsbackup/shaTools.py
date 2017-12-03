@@ -2,6 +2,7 @@
 
 """
 .. module:: shaTools
+    :platform: Windows, linux
     :synopsis: module for functions related to sha calculation.
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>

@@ -2,7 +2,7 @@
 
 """
 .. module:: hashVolume
-    :platform: Windows
+    :platform: Windows, linux
     :synopsis: module for class :class:`HashVolume <hashVolume.HashVolume>`.
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>
@@ -42,7 +42,13 @@ class HashVolume(object):
         self.locationPath = locationPath
         self.container = container
         if volId is None:
-            self.volId = getVolumeInfo(locationPath[0])['VolumeSerialNumber']
+            if os.name == 'nt':
+                self.volId = getVolumeInfo(locationPath[0])['VolumeSerialNumber']
+            elif os.name == 'posix':
+                from fsbackup.diskTools import getMountPointSerialNumberLinux
+                self.volId = getMountPointSerialNumberLinux(self.locationPath)
+            else:
+                raise OSError("OS '%s' not supported." % os.name)
         else:
             self.volId = volId
 

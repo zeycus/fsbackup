@@ -12,11 +12,11 @@ It is achieved with::
     fsbck.py createDatabase -db=<config_file>
 
 If the database containing the two necessary collections ``files`` and ``volumes`` do not exist, they are created.
-Otherwise the execution fails. If you want it rebuild, add the ``--force`` flag.
+Otherwise the execution fails. If you want it rebuilt, add the ``--force`` flag.
 
 
-Create reports for backup status
-================================
+Backup status reporting
+=======================
 With::
 
     fsbck.py backupStatus -db=<config_file>
@@ -63,14 +63,22 @@ and a ``backupStatus`` immediatly after it.
 Volume update
 ==============
 This is the way content gets actually backed-up. Suppose you have a volume with available space on it, or if you are going to create
-a new volume, just a formated external drive. When connected, it is assigned a drive letter, say J: [#fWin]_ . Then
+a new volume, just a formated external drive. If in Windows, when connected it is assigned a drive letter, say J:. Then
 to perform the update use::
 
     fsbck.py updateVolume -db=<config_file> --drive=J
 
 New files are added to the volume, until it is full or all of them are processed, a text message tells which of the two.
 
-.. warning:: Be sure that the ``files`` information is updated (via command ``refreshHashes``) before invoking a volume update. Otherwise, when the script tries to copy a file that the database is mentioning, it might not be physically there anymore, and thus exceptions would arise. There is no problem, however, if the only difference is that new files were created.
+Suppose you are using Linux and the drive got mounted in ``/mnt/zeycus/FA03-E14F``. Then instead of the ``drive`` argument, we should use
+``mountpoint``. For instance::
+
+    fsbck.py updateVolume -db=<config_file> --mountpoint=/mnt/zeycus/FA03-E14F
+
+In all the examples that follow, like in this one, the ``drive`` for Windows can be replaced by ``mountpoint`` for Linux.
+    
+
+.. warning:: Be sure that the ``files`` information is updated (via command ``refreshHashes``) before invoking a volume update. Otherwise, when the script tries to copy a file that the database is mentioning, it might not be physically there anymore, leading to errors. There is no problem, however, if the only difference is that new files were created.
 
 
 Volume clensing
@@ -95,11 +103,11 @@ In the first days, when I wanted to update a volume I found myself always perfor
   3. backupstatus reports regeneration
 
 
-I created a batch, but after a while I decided an additional command was in order to do it all: ``processDrive``. With::
+First I created a batch, but after a while decided an additional command was in order to do it all: ``processDrive``. With::
 
     fsbck.py processDrive -db=<config_file> --drive=<driveLetter>
 
-those three tasks are performed. This keeps the volumes clean of old files, the system fully updated and the status reports
+those three tasks are performed. This keeps the volumes clean of old files, the system fully updated and status reports
 reflecting the current backup status.
 
 In a day-to-day basis this is almost the only command you need (if the ``refreshHashes`` is taken care of by an scheduled task).
@@ -108,8 +116,8 @@ Of course, you could manually run ``refreshHashes`` before processing a drive, j
 
 Information recovery from volumes
 ==================================
-All the burden of keeping the filesystem updated has a single purpose: to be able to recover content from the backup volumes
-when necessary. This operation may be infrequent, but it is arguably the most important. It is currently performed with the
+All the burden of keeping the backup updated has a single purpose: to be able to recover content from volumes
+when necessary. This operation may be infrequent, but it is undoubtedly the most important. It is currently performed with the
 ``checkout`` command::
 
     fsbck.py updateVolume -db=<config_file> --drive=<driveLetter> --sourcepath=\\ZEYCUS-TVS671\Multimedia\video\seriesPlex\Monk --destpath=F:\temp\Monk
@@ -137,11 +145,11 @@ it is traversed and an entry is created for each actual file found.
 
 Volume Integrity Check
 =====================================
-In case we want to make sure that a backup volume is OK, we can perform an integrity check with::
+In case we want to make sure that a backup volume is OK, it is possible to perform an integrity check with::
 
     fsbck.py integrityCheck -db=<config_file> --drive=<driveLetter>
 
-This is a time consuming operation that actually compares each file of the volume with its counterpart in the actual filesystem
+This is a time consuming operation that actually compares each file in the volume with its counterpart in the actual filesystem
 (if it was not deleted). For 3TB disks it is taking me over a day.
 
 .. warning:: This is supposed to be done after a ``refreshHashes``. Otherwise the information in the DDBB might not reflect the actual state of the filesystem.
@@ -154,6 +162,3 @@ To show the volume id on screen, use::
     fsbck.py showVolumeId -db=<config_file> --drive=<driveLetter>
 
 
-.. rubric:: Footnotes
-
-.. [#fWin] I realize this is terribly Windows-oriented. For linux systems it would be rather similar, if/when Linux support is provided this documentation should be improved.

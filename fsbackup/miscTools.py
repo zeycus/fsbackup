@@ -2,7 +2,7 @@
 
 """
 .. module:: miscTools
-    :platform: Windows
+    :platform: Windows, linux
     :synopsis: module with auxiliary functions to classes HashVolume and FileDB.
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>

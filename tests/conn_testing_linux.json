@@ -1,0 +1,8 @@
+{
+    "connstr": "mongodb://127.0.0.1:27017/backupfs_testing",
+    "mountPoint": ".",
+    "paths": [
+        "temp/filesystem"
+    ],
+    "reportpref": "testing_"
+}

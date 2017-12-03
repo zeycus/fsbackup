@@ -2,7 +2,7 @@
 
 """
 .. module:: fileDB
-    :platform: Windows
+    :platform: Windows, linux
     :synopsis: module for class :class:`FileDB <fileDB.FileDB>`.
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>
@@ -88,8 +88,6 @@ class FileDB(object):
                         fnAux = fnAux[1:]
                     currentFiles.append(fnAux)
 
-
-
         currentFiles = set(currentFiles)
 
         # Obtain files stored in the DDBB
@@ -116,7 +114,7 @@ class FileDB(object):
                 self.container[fn] = dict(
                    timestamp=timestamp,
                    size=size,
-                   hash=sha256(fn),
+                   hash=sha256(self.compFn(fn)),
                 )
 
         # Include information for new files

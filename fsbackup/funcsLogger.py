@@ -3,6 +3,7 @@
 """
 .. module:: funcsLogger
     :synopsis: defines a simple standard logger.
+    :platform: Windows, linux
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>
 """

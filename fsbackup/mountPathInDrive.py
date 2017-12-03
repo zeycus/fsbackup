@@ -2,7 +2,7 @@
 
 """
 .. module:: mountPathInDrive
-    :platform: Windows
+    :platform: Windows, linux
     :synopsis: module for class :class:`MountPathInDrive <mountPathInDrive.MountPathInDrive>`.
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>

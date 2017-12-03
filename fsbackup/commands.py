@@ -2,7 +2,7 @@
 
 """
 .. module:: commands
-    :platform: Windows
+    :platform: Windows, linux
     :synopsis: module with the function to be executed for each fsbackup command
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>

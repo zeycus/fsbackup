@@ -2,7 +2,7 @@
 
 """
 .. module:: diskTools
-    :platform: Windows
+    :platform: Windows, linux
     :synopsis: module with functions that provide drive and volume information
 
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>
@@ -11,6 +11,7 @@
 
 
 import os
+import re
 import subprocess
 
 def genDrivesInfo():
@@ -77,12 +78,32 @@ def getVolumeInfo(driveLetter):
 
 
 def getAvailableLetter():
-    """Returns the first drive letter available."""
+    """Returns the first drive letter available, for Windows."""
     for let in "HIJKLMNOPQRSTUVXYZ":
         if not(os.path.isdir("%s:\\" % let)):
             return let
     raise Exception("No drive letter seems available")
 
+
+def getMountPointSerialNumberLinux(mp):
+    """For the mount point of an external drive in Linux, returns the SerialNumber of the disk.
+
+    :param mp: mount point
+    :type mp: str
+    :rtype: str
+
+    For instance, if /dev/sdb is mounted on /mnt/zeycus/E321-ABCD,
+    using getMountPointSerialNumberLinux('E321-ABCD') should return the disk's serialnumber.
+
+    """
+    lines = subprocess.check_output(["df" , "-h", mp]).decode("utf-8").split('\n')
+    if not (lines[0].startswith("Filesystem")):
+        raise OSError("Command df failed.")
+    device = re.search("^(.*?)\s", lines[1]).group(1)
+    udev = subprocess.Popen(["udevadm", "info", "--query=all", "--name=%s" % device],  stdout=subprocess.PIPE)
+    lines = subprocess.check_output(["grep", "ID_SERIAL_SHORT"], stdin=udev.stdout).decode("utf-8").split('\n')
+    udev.wait()
+    return re.search("ID_SERIAL_SHORT=(\w*)$", lines[0]).group(1)
 
 
 if __name__ == "__main__":
