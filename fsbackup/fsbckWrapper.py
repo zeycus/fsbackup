@@ -80,7 +80,7 @@ def fsbck_wrapper(arg_list):
     if ('drive' in args) and (args.drive is not None):  # Drive for Windows
         hashVol = HashVolume(
             logger=logger,
-            locationPath=r"%s:\\" % args.drive,
+            locationPath="%s:\\" % args.drive,
             container=volDB,
             volId=args.volumeid,
         )
