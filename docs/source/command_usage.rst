@@ -155,6 +155,22 @@ This is a time consuming operation that actually compares each file in the volum
 .. warning:: This is supposed to be done after a ``refreshHashes``. Otherwise the information in the DDBB might not reflect the actual state of the filesystem.
 
 
+File Duplicates Removal
+=======================
+Having the hash for all the files in the filesystem, it is trivial to check whether there are duplicates.
+The command::
+
+    fsbck.py removeDuplicates -db=<config_file> --regexp=<regularExpression>
+
+deletes all files in the filesystem that match the given regular expression, but only if there are copies of that file
+that do not match that regular expression. For instance::
+
+    fsbck.py removeDuplicates -db=<config_file> --regexp=justCopied
+
+removes all files that are duplicated and that contain in their absolutepath + name the string 'justCopied'. Useful
+if the folder 'justCopied' was recently added to the filesystem.
+
+
 Showing Volume Id
 =====================================
 To show the volume id on screen, use::

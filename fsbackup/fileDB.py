@@ -8,9 +8,10 @@
 .. moduleauthor:: Miguel Garcia <zeycus@gmail.com>
 """
 
-
+import re
 import os
 import filecmp
+from collections import defaultdict
 
 from fsbackup.shaTools import sha256
 from fsbackup.fileTools import abspath2longabspath, sizeof_fmt
@@ -61,6 +62,39 @@ class FileDB(object):
         """
         return set(info['hash'] for _, info in self)
 
+    def calcDuplicates(self):
+        """Return dict hash: [files] for which there are at least two files."""
+        hashInfo = defaultdict(list)
+        for fn, info in self:
+            hashInfo[info['hash']].append(fn)
+        return {sha: fns for (sha, fns) in hashInfo.items() if len(fns) >= 2}
+
+    def removeDuplicates(self, regexp):
+        nDeleted = 0
+        dups = self.calcDuplicates()
+        for fns in dups.values():
+            # Check whether at least one file does match the regexp and another does not
+            deletables = [fn for fn in fns if re.search(regexp, fn) is not None]
+            if deletables and any(fn for fn in fns if re.search(regexp, fn) is None):
+                for fn in deletables:
+                    self.removeEntry(fn, delete=True)
+                    nDeleted += 1
+        return nDeleted
+
+    def removeEntry(self, fn, delete=False):
+        """Removes entry for a file.
+        
+        :param fn: file for which we want the entry deleted
+        :type fn: str
+        :param delete: flag that tells whether the file should be physically deleted
+        :type delete: bool
+        """
+        self.logger.debug('Removing %s' % fn)
+        del self.container[fn]
+        if delete:
+            os.remove(self.compFn(fn))
+
+
     def update(self, forceRecalc=False):
         """Updates the DDBB info traversing the actual filesystem.
 
@@ -87,7 +121,6 @@ class FileDB(object):
                     while fnAux[0] == '\\':
                         fnAux = fnAux[1:]
                     currentFiles.append(fnAux)
-
         currentFiles = set(currentFiles)
 
         # Obtain files stored in the DDBB
@@ -97,8 +130,7 @@ class FileDB(object):
         # Delete DDBB entries for files that longer exist.
         self.logger.debug("Removing outdated entries.")
         for fn in sorted(storedFilesSet - currentFiles):
-            self.logger.debug('Removing %s' % fn)
-            del self.container[fn]
+            self.removeEntry(fn)
 
         # Update information for files with a newer timestamp, or a modified size.
         if forceRecalc:

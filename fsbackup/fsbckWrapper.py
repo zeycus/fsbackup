@@ -42,7 +42,7 @@ def fsbck_wrapper(arg_list):
     )
     parser.add_argument('command', help="task to perform", type=lambda s:s.lower(),
                         choices=("backupstatus", "extractvolumeinfo", "cleanvolume", "updatevolume", "refreshhashes", "processdrive",
-                                 "createdatabase", "checkout", "integritycheck", "showvolumeid", ))
+                                 "createdatabase", "checkout", "integritycheck", "showvolumeid", "removeduplicates", ))
     parser.add_argument('-db', '--dbfile', required=True, help="jsonfile whose filesystem/database is to be managed")
     if os.name == 'nt':
         parser.add_argument('-dr', '--drive', help="Windows drive (letter) where the volume is mounted")
@@ -54,7 +54,9 @@ def fsbck_wrapper(arg_list):
     parser.add_argument('--sourcepath', help="Path in the filesystem that is to be restored")
     parser.add_argument('--destpath', help="Path where the checkout should be created")
     parser.add_argument('--loglevel', help="logging level.", choices=("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"), default="DEBUG")
-    parser.add_argument('--volumeid', help="Volume id to be used, if forcing it is needed.", default=None)
+    parser.add_argument('--volumeid', help="Volume id to be used, if forcing it is needed", default=None)
+    parser.add_argument('--regexp', help="Regular Expression to be used")
+
     args = parser.parse_args(arg_list)
 
     # ***** Logger *****
@@ -96,6 +98,9 @@ def fsbck_wrapper(arg_list):
     infoReturned = dict(db=db)
     if args.command.lower() == 'backupstatus':
         comms.backupStatus(fDB=fDB, volDB=volDB, reportPref=dbConf['reportpref'])
+    elif args.command.lower() == 'removeduplicates':
+        nDeleted = comms.removeDuplicates(fDB=fDB, regexp=args.regexp)
+        infoReturned['nDeleted'] = nDeleted
     elif args.command.lower() == 'extractvolumeinfo':
         comms.extractVolumeInfo(hashVol=hashVol)
     elif args.command.lower() == 'showvolumeid':

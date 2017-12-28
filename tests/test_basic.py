@@ -76,7 +76,7 @@ class TestFsbackup(unittest.TestCase):
         ])
         self.assertEqual(self.db['files'].count(), self.nFiles)  # Make sure each file has an entry
 
-
+        regexp = '24'  # To be used in the removal of duplicates.
         if os.name == 'nt':
             avLetter = getAvailableLetter()
             with MountPathInDrive(path=vol_path, driveLetter=avLetter):
@@ -151,6 +151,24 @@ class TestFsbackup(unittest.TestCase):
                 # Make sure that the checkout is exact to the current filesystem.
                 self.assertTrue(checkFiletreesIdentical(fs_path, checkout_path),
                                 msg="The checkout tree is not exactly equal to the original filesystem.")
+
+                # Test the removal of duplicates
+                info = fsbck_wrapper([  # First pass
+                    'removeduplicates',
+                    '-db=%s' % self.conn_testing,
+                    '--regexp=%s' % regexp,
+                    '--loglevel=CRITICAL',
+                ])
+                self.assertGreater(info['nDeleted'], 0,
+                                   msg="No duplicate files were found, and some were expected.")
+                info = fsbck_wrapper([  # Second pass
+                    'removeduplicates',
+                    '-db=%s' % self.conn_testing,
+                    '--regexp=%s' % regexp,
+                    '--loglevel=CRITICAL',
+                ])
+                self.assertEqual(info['nDeleted'], 0,
+                                 msg="Duplicate files were found, none were expected.")
         else:
             # Update a volume in a mocked windows drive
             fsbck_wrapper([
@@ -223,6 +241,24 @@ class TestFsbackup(unittest.TestCase):
             # Make sure that the checkout is exact to the current filesystem.
             self.assertTrue(checkFiletreesIdentical(fs_path, checkout_path),
                             msg="The checkout tree is not exactly equal to the original filesystem.")
+
+            # Test the removal of duplicates
+            info = fsbck_wrapper([  # First pass
+                'removeduplicates',
+                '-db=%s' % self.conn_testing,
+                '--regexp=%s' % regexp,
+                '--loglevel=CRITICAL',
+            ])
+            self.assertGreater(info['nDeleted'], 0,
+                               msg="No duplicate files were found, and some were expected.")
+            info = fsbck_wrapper([  # Second pass
+                'removeduplicates',
+                '-db=%s' % self.conn_testing,
+                '--regexp=%s' % regexp,
+                '--loglevel=CRITICAL',
+            ])
+            self.assertEqual(info['nDeleted'], 0,
+                             msg="Duplicate files were found, none were expected.")
 
 if __name__ == '__main__':
     unittest.main()

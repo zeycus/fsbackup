@@ -33,6 +33,21 @@ def backupStatus(fDB, volDB, reportPref):
     fDB.reportStatusToFile(volHashesInfo, reportPref)
 
 
+def removeDuplicates(fDB, regexp):
+    """Removes files matching the regexp that are duplicates of others that don't.
+
+    :param fDB: the information regarding files
+    :type fDB: FileDB
+    :param regexp: the regular expression
+    :type regexp: str
+    :rtype: int
+    
+    Returns the number of deleted files.
+
+    """
+    return fDB.removeDuplicates(regexp)
+
+
 def extractVolumeInfo(hashVol):
     """Regenerates the DDBB information regarding the files contained in the present volume.
 
