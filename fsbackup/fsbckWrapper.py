@@ -42,7 +42,7 @@ def fsbck_wrapper(arg_list):
     )
     parser.add_argument('command', help="task to perform", type=lambda s:s.lower(),
                         choices=("backupstatus", "extractvolumeinfo", "cleanvolume", "updatevolume", "refreshhashes", "processdrive",
-                                 "createdatabase", "checkout", "integritycheck", "showvolumeid", "removeduplicates", ))
+                                 "createdatabase", "checkout", "integritycheck", "showvolumeid", "removeduplicates", "sievepath", ))
     parser.add_argument('-db', '--dbfile', required=True, help="jsonfile whose filesystem/database is to be managed")
     if os.name == 'nt':
         parser.add_argument('-dr', '--drive', help="Windows drive (letter) where the volume is mounted")
@@ -100,6 +100,9 @@ def fsbck_wrapper(arg_list):
         comms.backupStatus(fDB=fDB, volDB=volDB, reportPref=dbConf['reportpref'])
     elif args.command.lower() == 'removeduplicates':
         nDeleted = comms.removeDuplicates(fDB=fDB, regexp=args.regexp)
+        infoReturned['nDeleted'] = nDeleted
+    elif args.command.lower() == 'sievepath':
+        nDeleted = comms.removeDuplicates(fDB=fDB, path=args.sourcepath)
         infoReturned['nDeleted'] = nDeleted
     elif args.command.lower() == 'extractvolumeinfo':
         comms.extractVolumeInfo(hashVol=hashVol)

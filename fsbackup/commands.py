@@ -48,6 +48,21 @@ def removeDuplicates(fDB, regexp):
     return fDB.removeDuplicates(regexp)
 
 
+def sievePath(fDB, path):
+    """Recursively removes all files in path that are already in the fDB.
+
+    :param fDB: the information regarding files
+    :type fDB: FileDB
+    :param path: the path
+    :type path: str
+    :rtype: int
+
+    Returns the number of deleted files.
+
+    """
+    return fDB.sievePath(path)
+
+
 def extractVolumeInfo(hashVol):
     """Regenerates the DDBB information regarding the files contained in the present volume.
 

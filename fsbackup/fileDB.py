@@ -70,6 +70,7 @@ class FileDB(object):
         return {sha: fns for (sha, fns) in hashInfo.items() if len(fns) >= 2}
 
     def removeDuplicates(self, regexp):
+        """Removes entries matching the regexp"""
         nDeleted = 0
         dups = self.calcDuplicates()
         for fns in dups.values():
@@ -78,6 +79,22 @@ class FileDB(object):
             if deletables and any(fn for fn in fns if re.search(regexp, fn) is None):
                 for fn in deletables:
                     self.removeEntry(fn, delete=True)
+                    nDeleted += 1
+        return nDeleted
+
+    def sievePath(self, path):
+        """Recursively removes all files in path that are already present in the FileDB.
+        
+        The comparison is performed via SHA.
+        """
+        nDeleted = 0
+        hashes = self.hashesSet()
+        for root, _, fns in os.walk(path):
+            for fn in fns:
+                fnComp = os.path.join(root, fn)
+                if sha256(self.compFn(fn)) in hashes:
+                    self.logger.info("Removing file %s from filesystem." % fnComp)
+                    os.remove(fnComp)
                     nDeleted += 1
         return nDeleted
 
